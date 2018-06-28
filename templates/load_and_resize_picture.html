@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <title>
+      Save Resized image
+    </title>
+  </head>
+
+  <body>
+    <input type="file" id="fileUpload"><br>
+
+    Chosen image:
+
+    <br><br>
+
+    <canvas id="canvas"></canvas>
+
+    <form action="/saveImg64DataAsImageFile/" method=post enctype=multipart/form-data type=submit>
+      <div id="hiddenDiv">
+        <img src="" id="originalImage">
+        <input visibility=hidden type=text id="id2" name="id2"></input>
+      </div>
+
+      <input type=submit value=Submit class="submitButton">
+    </form>
+  </body>
+
+  <script>
+    document.getElementById('fileUpload').addEventListener('change', resizePictureToCanvasAndSaveDataUrl);
+
+    function resizePictureToCanvasAndSaveDataUrl() {
+      var originalPicture = document.getElementById('originalImage');
+      var inputFile    = document.querySelector('input[type=file]').files[0];
+      var reader  = new FileReader();
+      var percentage = 0.5;
+
+      reader.addEventListener("load", function () {
+        originalPicture.src = reader.result;
+        originalPicture.onload = function () {
+          var canvas = document.getElementById("canvas");
+          var ctx = canvas.getContext("2d");
+          canvas.height = canvas.width * (originalPicture.height / originalPicture.width);
+          var oc = document.createElement('canvas'),octx = oc.getContext('2d');
+          oc.width = originalPicture.width * percentage;
+          oc.height = originalPicture.height * percentage;
+          canvas.width = oc.width;
+          canvas.height = oc.height;
+          octx.drawImage(originalPicture, 0, 0, oc.width, oc.height);
+          octx.drawImage(oc, 0, 0, oc.width, oc.height);
+          ctx.drawImage(oc, 0, 0, oc.width, oc.height,0, 0, canvas.width, canvas.height);
+
+          var dataUrl = canvas.toDataURL('image/jpeg');
+          document.getElementById("id2").value = dataUrl;
+        }
+      }, false);
+
+      if (inputFile)
+        reader.readAsDataURL(inputFile);
+    }
+
+  </script>
+</html>

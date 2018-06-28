@@ -1,0 +1,5 @@
+
+flask_install.bat
+flask_run.bat
+venv/
+__pycache__/app.cpython-37.pyc
